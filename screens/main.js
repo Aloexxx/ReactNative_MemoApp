@@ -3,13 +3,14 @@ import { FlatList, Text, TouchableOpacity, View } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { useNavigation } from "@react-navigation/core";
 import { useDB } from "../context";
-
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 const main=()=>{
     const navigation = useNavigation();
     const realm = useDB();
     const [marked,setMarked] = useState(null);
     const [lastMarked,setLastMarked] = useState(null);
     const [list,setList] = useState();
+    const [showCalendars,setShowCalendars] = useState(true);
     let dates=[];
     let current=null;
 
@@ -40,17 +41,16 @@ const main=()=>{
 
     const deletePress=()=>{
       dates=[];
-      return(
-        realm.write(()=>{
-            realm.delete(realm.objects("DayMemo"))
-          }
-        )
+      realm.write(()=>{
+          realm.delete(realm.objects("DayMemo"))
+        }
       )
+      navigation.reset({routes:[{name:"main"}]});
     }
 
     return (
-      <>
-        <Calendar
+      <View style={{backgroundColor:"white",height:"100%"}}>
+        {showCalendars?<Calendar
           current={`${new Date()}`}
           minDate={'2020-01-01'}
           maxDate={'2022-12-31'}
@@ -86,30 +86,39 @@ const main=()=>{
           renderHeader={date => {
               return (
                 <View>
-                    <Text>{date.getMonth()+1}</Text>
+                    <Text>{date.getFullYear()}년 {date.getMonth()+1}월</Text>
                 </View>
               ) 
           }}
           enableSwipeMonths={true}
         />
-        <TouchableOpacity onPress={()=>deletePress()} style={{padding:5,margin:5,borderWidth:1,borderColor:"black",alignItems:"center",borderRadius:10}}>
-          <Text>모두삭제</Text>
+        :
+        null
+        }
+        <TouchableOpacity onPress={()=>setShowCalendars((prev)=>!prev)} style={{alignItems:"center"}}>
+          {showCalendars?<Icon name={"chevron-up"} size={20} color="black"/>:<Icon name={"chevron-down"} size={20} color="black"/>}
         </TouchableOpacity>
         <FlatList
           data={list}
+          showsVerticalScrollIndicator={false}
+          ListHeaderComponent={
+            <TouchableOpacity onPress={()=>deletePress()} style={{padding:5,margin:5,alignItems:"center",width:"20%",left:"79%"}}>
+              <Text style={{color:"red",fontSize:12}}>전체삭제</Text>
+            </TouchableOpacity>
+          }
           renderItem={({item})=>(
             <TouchableOpacity onPress={() =>navigation.navigate("Stacks",{
                 screen:"detail",
                 params:{
                   day:item.date
                 }
-              })} style={{borderWidth:1,borderColor:"black",padding:5,margin:5,borderRadius:10}}>
-              <Text>{item.date}</Text>
-              <Text>{item.text}</Text>
+              })} style={{borderWidth:0.2,borderColor:"black",padding:5,margin:5,borderRadius:5}}>
+              <Text style={{color:"blue",opacity:0.5}}>{item.date}</Text>
+              <Text style={{fontSize:22}}>{item.text}</Text>
             </TouchableOpacity>
           )}
         />
-      </>
+      </View>
     )
 }
 

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Alert, Text, TextInput, TouchableOpacity } from "react-native";
+import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useNavigation } from "@react-navigation/core";
 import { useEffect } from "react/cjs/react.development";
 import { useDB } from "../context";
@@ -54,15 +54,17 @@ const detail =({route:{params:{day}}})=>{
     }
 
     return (
-        <>
-            <TextInput placeholder="내용 입력" value={text} onChangeText={setText}/>
-            <TouchableOpacity onPress={onSave} style={{borderWidth:1,borderColor:"black",padding:5,margin:5,alignItems:"center"}}>
+        <View style={{alignItems:"center",justifyContent:"center",width:"100%",height:"100%"}}>  
+            <View style={{height:"80%",width:"80%",borderRadius:10,borderWidth:0.2,marginBottom:5}}>
+                <TextInput placeholder="내용 입력" value={text} onChangeText={setText} multiline/>
+            </View>
+            <TouchableOpacity onPress={onSave} style={{borderWidth:1,borderColor:"black",borderRadius:10,padding:5,margin:5,alignItems:"center",width:"80%"}}>
                 <Text>저장</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={onDelete} style={{borderWidth:1,borderColor:"black",padding:5,margin:5,alignItems:"center"}}>
-                <Text>삭제</Text>
+            <TouchableOpacity onPress={onDelete} style={{borderWidth:1,borderColor:"black",borderRadius:10,padding:5,margin:5,alignItems:"center",width:"80%"}}>
+                <Text style={{color:"red"}}>삭제</Text>
             </TouchableOpacity>
-        </>
+        </View>
     )
 }
 
